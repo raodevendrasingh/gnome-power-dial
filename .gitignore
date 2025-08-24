@@ -1,0 +1,45 @@
+# Compiled schema files
+schemas/gschemas.compiled
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build artifacts
+dist/
+build/
+*.o
+*.so
+*.dylib
+
+# Node modules (if using any Node.js tools)
+node_modules/
+
+# Python cache (if using any Python tools)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
