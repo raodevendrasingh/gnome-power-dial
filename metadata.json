@@ -1,10 +1,8 @@
 {
 	"name": "Power Dial",
-	"version": "1",
-	"description": "Windows-like Alt+F4 power menu with suspend, restart, power off, and logout",
+	"description": "Quick power menu with suspend, restart, power off, and logout options.",
 	"uuid": "power-dial@tminus.dev",
 	"shell-version": ["45", "46", "47", "48"],
 	"url": "https://github.com/raodevendrasingh/gnome-power-dial",
-	"gettext-domain": "power-dial@tminus.dev",
 	"settings-schema": "org.gnome.shell.extensions.power-dial"
 }

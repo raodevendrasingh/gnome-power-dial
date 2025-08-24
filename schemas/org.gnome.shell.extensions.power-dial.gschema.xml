@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="power-dial@tminus.dev">
+<schemalist>
   <schema id="org.gnome.shell.extensions.power-dial" path="/org/gnome/shell/extensions/power-dial/">
     <key name="shortcut" type="as">
       <default><![CDATA[['<Alt>F5']]]></default>
