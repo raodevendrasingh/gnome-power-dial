@@ -3,6 +3,6 @@
 	"description": "Quick power menu with suspend, restart, power off, and logout options.",
 	"uuid": "power-dial@tminus.dev",
 	"shell-version": ["45", "46", "47", "48"],
-	"url": "https://github.com/raodevendrasingh/gnome-power-dial",
+	"url": "https://github.com/raodevendrasingh/power-dial",
 	"settings-schema": "org.gnome.shell.extensions.power-dial"
 }
