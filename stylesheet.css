@@ -1,1 +1,41 @@
-/* Add your custom extension styling here */
+.power-dial-dialog {
+	min-width: 300px;
+}
+
+.power-dial-box {
+	width: 100%;
+}
+
+.power-dial-box .button {
+	min-height: 40px;
+	padding: 0 16px;
+	border-radius: 12px;
+	background-color: rgba(255, 255, 255, 0.06);
+	border: 1px solid transparent;
+	color: inherit;
+}
+
+.power-dial-box .button:hover {
+	background-color: rgba(255, 255, 255, 0.04);
+}
+
+.power-dial-box .button:active {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.power-dial-box .button {
+	margin-bottom: 8px;
+}
+
+.power-dial-box .button:last-child {
+	margin-bottom: 0;
+}
+
+.headline {
+	font-size: 22px;
+	font-weight: bold;
+	margin-top: 0;
+	margin-bottom: 20px;
+	padding: 0;
+	width: 100%;
+}
