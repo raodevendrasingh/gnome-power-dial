@@ -27,4 +27,4 @@ A GNOME Shell extension that provides a quick power menu with suspend, restart, 
 
 Download and enable the extension from the GNOME Extensions website:
 
-[Download Power Dial Extension (Link to be added)](https://extensions.gnome.org/extension/...)
+[Download Power Dial Extension](https://extensions.gnome.org/extension/8563/power-dial/)
