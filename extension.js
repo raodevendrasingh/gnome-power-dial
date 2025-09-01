@@ -17,22 +17,56 @@ export default class PowerDialExtension extends Extension {
 
 	enable() {
 		this._settings = this.getSettings();
+		this._registerKeybinding();
+	}
 
-		// Register the keybinding
-		this._keybindingId = Main.wm.addKeybinding(
-			"shortcut",
-			this._settings,
-			Meta.KeyBindingFlags.NONE,
-			Shell.ActionMode.ALL,
-			this._showPowerMenu.bind(this)
-		);
+	_registerKeybinding(retryCount = 0) {
+		const maxRetries = 5;
+		const retryDelay = 1000;
+
+		try {
+			if (this._keybindingId) {
+				Main.wm.removeKeybinding("shortcut");
+				this._keybindingId = null;
+			}
+
+			this._keybindingId = Main.wm.addKeybinding(
+				"shortcut",
+				this._settings,
+				Meta.KeyBindingFlags.NONE,
+				Shell.ActionMode.ALL,
+				this._showPowerMenu.bind(this)
+			);
+
+			if (!this._keybindingId) {
+				throw new Error("Keybinding registration returned null/undefined");
+			}
+
+		} catch (error) {
+			global.logError(`Power Dial: Failed to register keybinding (attempt ${retryCount + 1}): ${error.message}`);
+
+			if (retryCount < maxRetries) {
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, retryDelay, () => {
+					this._registerKeybinding(retryCount + 1);
+					return GLib.SOURCE_REMOVE;
+				});
+			} else {
+				global.logError(`Power Dial: Failed to register keybinding after ${maxRetries + 1} attempts`);
+			}
+		}
 	}
 
 	disable() {
-		if (this._keybindingId) {
-			Main.wm.removeKeybinding("shortcut");
+		try {
+			if (this._keybindingId) {
+				Main.wm.removeKeybinding("shortcut");
+			}
+		} catch (error) {
+			global.logError(`Power Dial: Error removing keybinding: ${error.message}`);
+		} finally {
 			this._keybindingId = null;
 		}
+
 		this._settings = null;
 	}
 
@@ -56,7 +90,6 @@ export default class PowerDialExtension extends Extension {
 		});
 		box.add_child(title);
 
-		// Helper to create native-looking buttons with icon and label
 		const createButton = (labelText, iconName, action, styleClass) => {
 			const button = new St.Button({
 				style_class: `button ${styleClass || ""}`,
@@ -90,7 +123,6 @@ export default class PowerDialExtension extends Extension {
 			return button;
 		};
 
-		// Add stacked buttons (matching GNOME power menu order)
 		box.add_child(
 			createButton(
 				"Suspend",
@@ -124,7 +156,6 @@ export default class PowerDialExtension extends Extension {
 			)
 		);
 
-		// Bottom buttons (Cancel as suggested action for native feel)
 		dialog.setButtons([
 			{
 				label: "Cancel",
