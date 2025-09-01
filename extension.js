@@ -13,6 +13,8 @@ export default class PowerDialExtension extends Extension {
 		super(metadata);
 		this._settings = null;
 		this._keybindingId = null;
+		this._dialog = null;
+		this._isDialogOpen = false;
 	}
 
 	enable() {
@@ -67,13 +69,28 @@ export default class PowerDialExtension extends Extension {
 			this._keybindingId = null;
 		}
 
+		// Close any open dialog
+		if (this._dialog) {
+			this._dialog.close();
+			this._dialog = null;
+			this._isDialogOpen = false;
+		}
+
 		this._settings = null;
 	}
 
 	_showPowerMenu() {
+		// Prevent opening multiple dialogs
+		if (this._isDialogOpen) {
+			return;
+		}
+
 		let dialog = new ModalDialog.ModalDialog({
 			styleClass: "power-dial-dialog",
 		});
+
+		this._dialog = dialog;
+		this._isDialogOpen = true;
 
 		const box = new St.BoxLayout({
 			vertical: true,
@@ -164,6 +181,12 @@ export default class PowerDialExtension extends Extension {
 				key: Clutter.KEY_Escape,
 			},
 		]);
+
+		// Reset dialog state when closed
+		dialog.connect("closed", () => {
+			this._dialog = null;
+			this._isDialogOpen = false;
+		});
 
 		dialog.open();
 	}
