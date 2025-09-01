@@ -39,3 +39,34 @@
 	padding: 0;
 	width: 100%;
 }
+
+/* Tiled view styles - matching button styles exactly */
+.power-dial-box .tile {
+	min-height: 40px;
+	min-width: 130px;
+	padding: 12px 12px;
+	border-radius: 12px;
+	background-color: rgba(255, 255, 255, 0.06);
+	border: 1px solid transparent;
+	color: inherit;
+}
+
+.power-dial-box .tile:hover {
+	background-color: rgba(255, 255, 255, 0.04);
+}
+
+.power-dial-box .tile:active {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.power-dial-box .tile-label {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 4px;
+	color: inherit;
+}
+
+.power-dial-box .tile .system-status-icon {
+	color: inherit;
+}

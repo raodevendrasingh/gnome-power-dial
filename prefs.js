@@ -17,6 +17,12 @@ export default class PowerDialPreferences extends ExtensionPreferences {
 		});
 		page.add(keyboardGroup);
 
+		const displayGroup = new Adw.PreferencesGroup({
+			title: "Display",
+			description: "Customize how the power dial appears",
+		});
+		page.add(displayGroup);
+
 		const shortcutRow = new Adw.ActionRow({
 			title: "Power Dial Shortcut",
 			subtitle: "Click to change the keyboard shortcut",
@@ -29,7 +35,34 @@ export default class PowerDialPreferences extends ExtensionPreferences {
 		});
 		shortcutRow.add_suffix(shortcutButton);
 
+		const viewModeRow = new Adw.ComboRow({
+			title: "Power Dial View",
+			subtitle: "Choose how the power options are displayed",
+		});
+		displayGroup.add(viewModeRow);
+
 		const settings = this.getSettings();
+
+		// Set up view mode combo box
+		const viewModeModel = new Gtk.StringList();
+		viewModeModel.append("Stacked");
+		viewModeModel.append("Tiled");
+		viewModeRow.set_model(viewModeModel);
+
+		// Set initial value from settings
+		const currentViewMode = settings.get_string("view-mode");
+		if (currentViewMode === "stacked") {
+			viewModeRow.set_selected(0);
+		} else if (currentViewMode === "tiled") {
+			viewModeRow.set_selected(1);
+		}
+
+		// Connect combo box changes to settings
+		viewModeRow.connect("notify::selected", () => {
+			const selectedIndex = viewModeRow.get_selected();
+			const selectedMode = selectedIndex === 0 ? "stacked" : "tiled";
+			settings.set_string("view-mode", selectedMode);
+		});
 
 		this._updateShortcutDisplay(shortcutButton, settings);
 

@@ -6,5 +6,10 @@
       <summary>Shortcut to open the power menu</summary>
       <description>The keybinding to trigger the power menu (e.g., ['&lt;Alt&gt;F5']).</description>
     </key>
+    <key name="view-mode" type="s">
+      <default>'stacked'</default>
+      <summary>Layout mode for the power dial menu</summary>
+      <description>How to display the power options. Options: 'stacked' (vertical list) or 'tiled' (2x2 grid).</description>
+    </key>
   </schema>
 </schemalist>
