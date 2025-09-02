@@ -23,6 +23,8 @@ export default class PowerDialPreferences extends ExtensionPreferences {
 		});
 		page.add(displayGroup);
 
+		const settings = this.getSettings();
+
 		const shortcutRow = new Adw.ActionRow({
 			title: "Power Dial Shortcut",
 			subtitle: "Click to change the keyboard shortcut",
@@ -41,15 +43,23 @@ export default class PowerDialPreferences extends ExtensionPreferences {
 		});
 		displayGroup.add(viewModeRow);
 
-		const settings = this.getSettings();
+		const topBarIconRow = new Adw.ActionRow({
+			title: "Show Top Bar Icon",
+			subtitle: "Display Power Dial icon in the top bar",
+		});
+		displayGroup.add(topBarIconRow);
 
-		// Set up view mode combo box
+		const topBarIconToggle = new Gtk.Switch({
+			active: settings.get_boolean("show-top-bar-icon"),
+			valign: Gtk.Align.CENTER,
+		});
+		topBarIconRow.add_suffix(topBarIconToggle);
+
 		const viewModeModel = new Gtk.StringList();
 		viewModeModel.append("Stacked");
 		viewModeModel.append("Tiled");
 		viewModeRow.set_model(viewModeModel);
 
-		// Set initial value from settings
 		const currentViewMode = settings.get_string("view-mode");
 		if (currentViewMode === "stacked") {
 			viewModeRow.set_selected(0);
@@ -57,11 +67,14 @@ export default class PowerDialPreferences extends ExtensionPreferences {
 			viewModeRow.set_selected(1);
 		}
 
-		// Connect combo box changes to settings
 		viewModeRow.connect("notify::selected", () => {
 			const selectedIndex = viewModeRow.get_selected();
 			const selectedMode = selectedIndex === 0 ? "stacked" : "tiled";
 			settings.set_string("view-mode", selectedMode);
+		});
+
+		topBarIconToggle.connect("notify::active", () => {
+			settings.set_boolean("show-top-bar-icon", topBarIconToggle.get_active());
 		});
 
 		this._updateShortcutDisplay(shortcutButton, settings);

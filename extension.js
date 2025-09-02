@@ -5,6 +5,7 @@ import Clutter from "gi://Clutter";
 import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
 import * as Main from "resource:///org/gnome/shell/ui/main.js";
 import * as ModalDialog from "resource:///org/gnome/shell/ui/modalDialog.js";
+import * as PanelMenu from "resource:///org/gnome/shell/ui/panelMenu.js";
 import Meta from "gi://Meta";
 import Shell from "gi://Shell";
 
@@ -15,6 +16,8 @@ export default class PowerDialExtension extends Extension {
 		this._keybindingId = null;
 		this._dialog = null;
 		this._isDialogOpen = false;
+		this._indicator = null;
+		this._settingsConnectionId = null;
 	}
 
 	_renderDialogView(box) {
@@ -274,16 +277,14 @@ export default class PowerDialExtension extends Extension {
 			});
 		}
 
-		if (this._settings.get_string("view-mode") !== "tiled") {
-			dialog.setButtons([
-				{
-					label: "Cancel",
-					action: () => dialog.close(),
-					default: true,
-					key: Clutter.KEY_Escape,
-				},
-			]);
-		}
+		dialog.setButtons([
+			{
+				label: "Cancel",
+				action: () => dialog.close(),
+				default: true,
+				key: Clutter.KEY_Escape,
+			},
+		]);
 
 		dialog.connect("closed", () => {
 			this._dialog = null;
@@ -377,6 +378,42 @@ export default class PowerDialExtension extends Extension {
 	enable() {
 		this._settings = this.getSettings();
 		this._registerKeybinding();
+
+		if (this._settings.get_boolean("show-top-bar-icon")) {
+			this._createIndicator();
+		}
+
+		this._settingsConnectionId = this._settings.connect("changed::show-top-bar-icon", () => {
+			this._handleTopBarIconSettingChanged();
+		});
+	}
+
+	_createIndicator() {
+		this._indicator = new PanelMenu.Button(0.0, "Power Dial", false);
+
+		let icon = new St.Icon({
+			icon_name: "system-shutdown-symbolic",
+			style_class: "system-status-icon"
+		});
+
+		this._indicator.add_child(icon);
+
+		this._indicator.connect("button-press-event", () => {
+			this._showPowerMenu();
+		});
+
+		Main.panel.addToStatusArea("power-dial", this._indicator, 0, "right");
+	}
+
+	_handleTopBarIconSettingChanged() {
+		const showIcon = this._settings.get_boolean("show-top-bar-icon");
+
+		if (showIcon && !this._indicator) {
+			this._createIndicator();
+		} else if (!showIcon && this._indicator) {
+			this._indicator.destroy();
+			this._indicator = null;
+		}
 	}
 
 	_registerKeybinding(retryCount = 0) {
@@ -432,63 +469,19 @@ export default class PowerDialExtension extends Extension {
 			this._isDialogOpen = false;
 		}
 
+		if (this._indicator) {
+			this._indicator.destroy();
+			this._indicator = null;
+		}
+
+		if (this._settingsConnectionId) {
+			this._settings.disconnect(this._settingsConnectionId);
+			this._settingsConnectionId = null;
+		}
+
 		this._settings = null;
 	}
 
-	_showPowerMenu() {
-		if (this._isDialogOpen) {
-			return;
-		}
-
-		let dialog = new ModalDialog.ModalDialog({
-			styleClass: "power-dial-dialog",
-		});
-
-		this._dialog = dialog;
-		this._isDialogOpen = true;
-
-		const box = new St.BoxLayout({
-			vertical: true,
-			x_expand: true,
-			style_class: "power-dial-box",
-			can_focus: false,
-		});
-		dialog.contentLayout.add_child(box);
-
-		const title = new St.Label({
-			text: "Power Dial",
-			style_class: "headline",
-			x_expand: true,
-			x_align: Clutter.ActorAlign.START,
-		});
-		box.add_child(title);
-
-		this._renderDialogView(box);
-
-		dialog.setButtons([
-			{
-				label: "Cancel",
-				action: () => dialog.close(),
-				default: true,
-				key: Clutter.KEY_Escape,
-			},
-		]);
-
-		dialog.connect("closed", () => {
-			this._dialog = null;
-			this._isDialogOpen = false;
-			if (this._tiles) {
-				this._tiles.forEach(tile => {
-					tile.remove_style_class_name('focused-tile');
-				});
-			}
-			this._tiles = null;
-			this._currentTileIndex = 0;
-		});
-
-		dialog.open();
-	}
-	
 	_logout() {
 		Gio.DBus.session.call(
 			"org.gnome.SessionManager",

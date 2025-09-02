@@ -11,5 +11,10 @@
       <summary>Layout mode for the power dial menu</summary>
       <description>How to display the power options. Options: 'stacked' (vertical list) or 'tiled' (2x2 grid).</description>
     </key>
+    <key name="show-top-bar-icon" type="b">
+      <default>true</default>
+      <summary>Show top bar icon</summary>
+      <description>Whether to display the Power Dial icon in the top bar</description>
+    </key>
   </schema>
 </schemalist>
